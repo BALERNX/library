@@ -7,4 +7,8 @@
     <UserSecretsId>449efc3d-78f3-4d13-89e7-2b1dab461ed2</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+  </ItemGroup>
+
 </Project>
