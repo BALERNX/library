@@ -1,0 +1,39 @@
+﻿@model library.Models.Member
+
+@{
+    ViewData["Title"] = "Edit Member";
+}
+
+<h1>Edit Member</h1>
+
+<form asp-action="Edit" asp-route-id="@Model.MemberId" method="post">
+    <input type="hidden" asp-for="MemberId" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label">Full Name</label>
+        <input asp-for="FullName" class="form-control" required />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email (optional)</label>
+        <input asp-for="Email" type="text" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MemberType" class="form-label">Member Type</label>
+        <select asp-for="MemberType" class="form-select" required>
+            <option value="Regular">Regular</option>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+        </select>
+        <span asp-validation-for="MemberType" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
