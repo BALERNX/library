@@ -4,47 +4,127 @@
     ViewData["Title"] = "Books";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h1 class="mb-0">Books</h1>
-        <p class="text-muted mb-0">@Model.Count books in the catalogue</p>
-    </div>
-    <a asp-action="Create" class="btn btn-primary">Add a book</a>
-</div>
+<div class="books-page">
+    <div class="books-heading">
+        <div class="books-heading-left">
+            <div class="books-icon" aria-hidden="true">📚</div>
 
-<table class="table table-striped table-hover align-middle">
-    <thead class="table-dark">
-        <tr>
-            <th class="text-end" style="width:4rem">#</th>
-            <th>Title</th>
-            <th>Category</th>
-            <th class="text-end">Price</th>
-            <th class="text-end" style="width:12rem">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var book in Model)
-        {
-            <tr>
-                <td class="text-end">@book.BookId</td>
-                <td>@book.Title</td>
-                <td>
-                    <span class="badge text-bg-secondary">
-                        @(book.Category ?? "—")
-                    </span>
-                </td>
-                <td class="text-end">
-                    @(book.Price?.ToString("N2") ?? "—")
-                </td>
-                <td class="text-end">
-                    <a asp-action="Edit"
-                       asp-route-id="@book.BookId"
-                       class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a asp-action="Delete"
-                       asp-route-id="@book.BookId"
-                       class="btn btn-sm btn-outline-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+            <div class="books-heading-text">
+                <h1>Books</h1>
+                <p>@Model.Count books in the catalogue</p>
+            </div>
+        </div>
+
+        <a asp-action="Create" class="add-book-btn">
+            <span aria-hidden="true">+</span>
+            Add a book
+        </a>
+    </div>
+
+    <div class="books-table-card">
+        <div class="table-responsive">
+            <table class="books-table">
+                <thead>
+                    <tr>
+                        <th class="number-column">#</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th class="price-column">Price</th>
+                        <th class="actions-column">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-books">
+                                <div class="empty-icon">📖</div>
+                                <h3>No books yet</h3>
+                                <p>Add your first book to the catalogue.</p>
+                                <a asp-action="Create" class="add-book-btn">
+                                    + Add a book
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var book in Model)
+                        {
+                            <tr>
+                                <td class="number-column">
+                                    @book.BookId
+                                </td>
+
+                                <td class="book-title-cell">
+                                    @book.Title
+                                </td>
+
+                                <td>
+                                    @if (string.IsNullOrWhiteSpace(book.Category))
+                                    {
+                                        <span class="category-badge category-default">
+                                            Uncategorized
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        var category = book.Category.Trim().ToLowerInvariant();
+                                        var categoryClass = category switch
+                                        {
+                                            "textbook" => "category-textbook",
+                                            "fiction" => "category-fiction",
+                                            "classic" => "category-classic",
+                                            "reference" => "category-reference",
+                                            "poetry" => "category-poetry",
+                                            _ => "category-default"
+                                        };
+
+                                        <span class="category-badge @categoryClass">
+                                            @book.Category
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="price-column">
+                                    @if (book.Price.HasValue)
+                                    {
+                                        @book.Price.Value.ToString("N2")
+                                    }
+                                    else
+                                    {
+                                        <span class="no-price">—</span>
+                                    }
+                                </td>
+
+                                <td class="actions-column">
+                                    <div class="book-actions">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@book.BookId"
+                                           class="edit-book-btn">
+                                            <span aria-hidden="true">✎</span>
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@book.BookId"
+                                           class="delete-book-btn">
+                                            <span aria-hidden="true">♲</span>
+                                            Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="books-footer">
+        <span>Library Management System</span>
+        <span>Organize. Discover. Learn.</span>
+    </div>
+</div>

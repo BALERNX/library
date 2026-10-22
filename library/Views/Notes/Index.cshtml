@@ -1,0 +1,55 @@
+﻿@model List<library.Models.Note>
+
+@{
+    ViewData["Title"] = "Notes";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1>Notes</h1>
+            <p>@Model.Count notes in the notepad</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">Add a note</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Body</th>
+                    <th>Created On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var note in Model)
+                {
+                    <tr>
+                        <td>@note.Title</td>
+                        <td>
+                            @if (string.IsNullOrWhiteSpace(note.Body))
+                            {
+                                <span class="text-muted">No body</span>
+                            }
+                            else
+                            {
+                                @note.Body
+                            }
+                        </td>
+                        <td>@note.CreatedOn.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@note.NoteId"
+                               class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-action="Delete"
+                               asp-route-id="@note.NoteId"
+                               class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
