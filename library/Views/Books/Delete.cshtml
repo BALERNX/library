@@ -28,3 +28,8 @@
     <button type="submit" class="btn btn-danger">Confirm Delete</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
