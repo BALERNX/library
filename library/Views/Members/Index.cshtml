@@ -41,7 +41,10 @@
                     <a asp-action="Delete"
                        asp-route-id="@member.MemberId"
                        class="btn btn-sm btn-outline-danger">Delete</a>
-                </td>
+                    <a asp-action="Details" asp-route-id="@member.MemberId"
+                       class="btn btn-sm btn-outline-primary">Loans</a>
+                   </td>
+
             </tr>
         }
     </tbody>
