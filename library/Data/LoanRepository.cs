@@ -7,7 +7,7 @@ namespace library.Data;
 // Every SQL statement about loans lives in this one class.
 public class LoanRepository
 {
-    public const int MaxOpenLoans = 3; // The most books one member may have out at once.
+    public const int MaxOpenLoans = 3;
 
     private readonly NpgsqlDataSource _dataSource;
 
@@ -15,6 +15,8 @@ public class LoanRepository
     {
         _dataSource = dataSource;
     }
+
+    // Copies the current row into a LoanView.
     private static LoanView ReadLoan(NpgsqlDataReader reader)
     {
         return new LoanView
@@ -57,5 +59,55 @@ public class LoanRepository
 
         return loans;
     }
-}
 
+    // BORROW: lend one book, unless the member already has MaxOpenLoans books out.
+    // The check and the INSERT run inside one transaction: both happen, or neither does.
+    public async Task<bool> BorrowAsync(long memberId, long bookId, int daysAllowed)
+    {
+        await using var connection = await _dataSource.OpenConnectionAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        // Lock this member's row.
+        await using (var lockMember = new NpgsqlCommand(
+            "SELECT member_id FROM lending.member WHERE member_id = @member_id FOR UPDATE;",
+            connection, transaction))
+        {
+            lockMember.Parameters.AddWithValue("member_id", memberId);
+            await lockMember.ExecuteNonQueryAsync();
+        }
+
+        // Count the member's open loans.
+        long openLoans;
+
+        await using (var count = new NpgsqlCommand(
+            "SELECT COUNT(*) FROM lending.loan WHERE member_id = @member_id AND returned_on IS NULL;",
+            connection, transaction))
+        {
+            count.Parameters.AddWithValue("member_id", memberId);
+            openLoans = Convert.ToInt64(await count.ExecuteScalarAsync());
+        }
+
+        // Stop borrowing if the member has reached the limit.
+        if (openLoans >= MaxOpenLoans)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+
+        // Insert the new loan.
+        await using (var insert = new NpgsqlCommand(
+            "INSERT INTO lending.loan (member_id, book_id, days_allowed) VALUES (@member_id, @book_id, @days_allowed);",
+            connection, transaction))
+        {
+            insert.Parameters.AddWithValue("member_id", memberId);
+            insert.Parameters.AddWithValue("book_id", bookId);
+            insert.Parameters.AddWithValue("days_allowed", daysAllowed);
+            await insert.ExecuteNonQueryAsync();
+        }
+
+        // Save the transaction.
+        await transaction.CommitAsync();
+
+        return true;
+    }
+}
