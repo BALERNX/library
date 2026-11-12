@@ -19,6 +19,7 @@
             <th>Full Name</th>
             <th>Email</th>
             <th>Member Type</th>
+            <th class="text-end">Books out</th>
             <th class="text-end">Actions</th>
         </tr>
     </thead>
@@ -29,6 +30,7 @@
                 <td class="text-end">@member.MemberId</td>
                 <td>@member.FullName</td>
                 <td>@(member.Email ?? "—")</td>
+                <td class="text-end">@member.OpenLoans</td>
                 <td>
                     <span class="badge text-bg-secondary">
                         @member.MemberType
