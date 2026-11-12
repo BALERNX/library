@@ -4,127 +4,332 @@
     ViewData["Title"] = "Books";
 }
 
-<div class="books-page">
-    <div class="books-heading">
-        <div class="books-heading-left">
-            <div class="books-icon" aria-hidden="true">📚</div>
+<style>
+    .books-page {
+        max-width: 1200px;
+        margin: 45px auto;
+        padding: 0 20px;
+        color: #172b4d;
+    }
 
-            <div class="books-heading-text">
-                <h1>Books</h1>
-                <p>@Model.Count books in the catalogue</p>
+    .books-hero {
+        background: linear-gradient(120deg, #102a43, #176b70);
+        color: white;
+        padding: 35px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+        box-shadow: 0 12px 30px rgba(16, 42, 67, .15);
+    }
+
+        .books-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .books-hero p {
+            color: #d6e8ed;
+            margin: 8px 0 0;
+        }
+
+    .hero-icon {
+        font-size: 55px;
+        margin-right: 20px;
+    }
+
+    .add-book-btn {
+        background: #f4c95d;
+        color: #172b4d;
+        border: none;
+        border-radius: 10px;
+        padding: 13px 20px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: .2s;
+    }
+
+        .add-book-btn:hover {
+            background: #ffda79;
+            color: #172b4d;
+            transform: translateY(-2px);
+        }
+
+    .books-summary {
+        background: white;
+        border: 1px solid #e5edf2;
+        border-radius: 15px;
+        padding: 22px 25px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 5px 18px rgba(16, 42, 67, .04);
+    }
+
+    .summary-icon {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        border-radius: 13px;
+        background: #e3f4f1;
+        font-size: 25px;
+    }
+
+    .summary-number {
+        font-size: 25px;
+        font-weight: 800;
+        color: #176b70;
+    }
+
+    .summary-label {
+        color: #718096;
+        font-size: 13px;
+    }
+
+    .books-card {
+        background: white;
+        border: 1px solid #e5edf2;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 8px 25px rgba(16, 42, 67, .05);
+    }
+
+        .books-card h2 {
+            font-size: 19px;
+            font-weight: 750;
+            margin-bottom: 5px;
+        }
+
+        .books-card .subtitle {
+            color: #8291a5;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+    .books-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .books-table thead th {
+            background: #edf4f5;
+            color: #385568;
+            padding: 15px 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            border: none;
+        }
+
+            .books-table thead th:first-child {
+                border-radius: 9px 0 0 9px;
+            }
+
+            .books-table thead th:last-child {
+                border-radius: 0 9px 9px 0;
+            }
+
+        .books-table tbody td {
+            padding: 17px 14px;
+            border-bottom: 1px solid #edf1f5;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .books-table tbody tr:hover {
+            background: #f7fbfb;
+        }
+
+    .book-id {
+        color: #8493a5;
+        font-weight: 700;
+    }
+
+    .book-title {
+        font-weight: 700;
+        color: #183b56;
+    }
+
+    .category-tag {
+        display: inline-block;
+        background: #e1f3ef;
+        color: #167568;
+        padding: 7px 13px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .book-price {
+        font-weight: 700;
+        color: #176b70;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        margin: 2px;
+        transition: .2s;
+    }
+
+    .edit-btn {
+        color: #176b70;
+        background: #e7f5f3;
+        border: 1px solid #b9e0db;
+    }
+
+        .edit-btn:hover {
+            background: #176b70;
+            color: white;
+        }
+
+    .delete-btn {
+        color: #c43d4b;
+        background: #fff0f0;
+        border: 1px solid #f5c5ca;
+    }
+
+        .delete-btn:hover {
+            background: #c43d4b;
+            color: white;
+        }
+
+    .empty-books {
+        text-align: center;
+        padding: 55px 15px;
+        color: #8291a5;
+    }
+
+        .empty-books .empty-icon {
+            font-size: 45px;
+            margin-bottom: 12px;
+        }
+
+    @@media (max-width: 700px) {
+        .books-hero {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 25px;
+        }
+
+            .books-hero h1 {
+                font-size: 2rem;
+            }
+
+        .books-table {
+            min-width: 650px;
+        }
+
+        .books-card {
+            padding: 14px;
+        }
+    }
+</style>
+
+<div class="books-page">
+
+    <div class="books-hero">
+        <div class="d-flex align-items-center">
+            <div class="hero-icon">📚</div>
+            <div>
+                <h1>Book Collection</h1>
+                <p>Discover, organize, and manage your library collection.</p>
             </div>
         </div>
 
         <a asp-action="Create" class="add-book-btn">
-            <span aria-hidden="true">+</span>
-            Add a book
+            + Add New Book
         </a>
     </div>
 
-    <div class="books-table-card">
-        <div class="table-responsive">
-            <table class="books-table">
-                <thead>
-                    <tr>
-                        <th class="number-column">#</th>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th class="price-column">Price</th>
-                        <th class="actions-column">Actions</th>
-                    </tr>
-                </thead>
+    <div class="books-summary">
+        <div class="summary-icon">📖</div>
+        <div>
+            <div class="summary-number">@Model.Count</div>
+            <div class="summary-label">TOTAL BOOKS IN COLLECTION</div>
+        </div>
+    </div>
 
-                <tbody>
-                    @if (Model.Count == 0)
-                    {
+    <div class="books-card">
+        <h2>Library Catalogue</h2>
+        <p class="subtitle">All registered books and their information</p>
+
+        @if (Model.Count == 0)
+        {
+            <div class="empty-books">
+                <div class="empty-icon">📚</div>
+                <h4>No books found</h4>
+                <p>Add your first book to start building your collection.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    Add Your First Book
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="books-table">
+                    <thead>
                         <tr>
-                            <td colspan="5" class="empty-books">
-                                <div class="empty-icon">📖</div>
-                                <h3>No books yet</h3>
-                                <p>Add your first book to the catalogue.</p>
-                                <a asp-action="Create" class="add-book-btn">
-                                    + Add a book
-                                </a>
-                            </td>
+                            <th>#</th>
+                            <th>Book Title</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th class="text-center">Actions</th>
                         </tr>
-                    }
-                    else
-                    {
+                    </thead>
+
+                    <tbody>
                         @foreach (var book in Model)
                         {
                             <tr>
-                                <td class="number-column">
-                                    @book.BookId
-                                </td>
+                                <td class="book-id">@book.BookId</td>
 
-                                <td class="book-title-cell">
+                                <td class="book-title">
                                     @book.Title
                                 </td>
 
                                 <td>
-                                    @if (string.IsNullOrWhiteSpace(book.Category))
-                                    {
-                                        <span class="category-badge category-default">
-                                            Uncategorized
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        var category = book.Category.Trim().ToLowerInvariant();
-                                        var categoryClass = category switch
-                                        {
-                                            "textbook" => "category-textbook",
-                                            "fiction" => "category-fiction",
-                                            "classic" => "category-classic",
-                                            "reference" => "category-reference",
-                                            "poetry" => "category-poetry",
-                                            _ => "category-default"
-                                        };
-
-                                        <span class="category-badge @categoryClass">
-                                            @book.Category
-                                        </span>
-                                    }
+                                    <span class="category-tag">
+                                        @(book.Category ?? "Uncategorized")
+                                    </span>
                                 </td>
 
-                                <td class="price-column">
-                                    @if (book.Price.HasValue)
-                                    {
-                                        @book.Price.Value.ToString("N2")
-                                    }
-                                    else
-                                    {
-                                        <span class="no-price">—</span>
-                                    }
+                                <td class="book-price">
+                                    @(book.Price?.ToString("N2") ?? "—")
                                 </td>
 
-                                <td class="actions-column">
-                                    <div class="book-actions">
-                                        <a asp-action="Edit"
-                                           asp-route-id="@book.BookId"
-                                           class="edit-book-btn">
-                                            <span aria-hidden="true">✎</span>
-                                            Edit
-                                        </a>
+                                <td class="text-center">
+                                    <a asp-action="Edit"
+                                       asp-route-id="@book.BookId"
+                                       class="action-btn edit-btn">
+                                        ✎ Edit
+                                    </a>
 
-                                        <a asp-action="Delete"
-                                           asp-route-id="@book.BookId"
-                                           class="delete-book-btn">
-                                            <span aria-hidden="true">♲</span>
-                                            Delete
-                                        </a>
-                                    </div>
+                                    <a asp-action="Delete"
+                                       asp-route-id="@book.BookId"
+                                       class="action-btn delete-btn">
+                                        ✕ Delete
+                                    </a>
                                 </td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 
-    <div class="books-footer">
-        <span>Library Management System</span>
-        <span>Organize. Discover. Learn.</span>
-    </div>
 </div>

@@ -1,53 +1,296 @@
-﻿@model BorrowForm
+﻿@model library.Models.BorrowForm
+
 @{
-    ViewData["Title"] = "Borrow a book";
+    ViewData["Title"] = "Borrow a Book";
 }
 
-<h1 class="mb-3">Borrow a book</h1>
+<style>
+    .borrow-page {
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 0 20px;
+        color: #172b4d;
+    }
 
-<form asp-action="Borrow" method="post" class="card card-body" style="max-width:36rem">
+    .borrow-hero {
+        background: linear-gradient(120deg, #102a43, #176b70);
+        color: white;
+        padding: 30px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        box-shadow: 0 12px 30px rgba(16, 42, 67, .15);
+    }
 
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+        .borrow-hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+        }
 
-    <div class="mb-3">
-        <label asp-for="MemberId" class="form-label">Member</label>
+        .borrow-hero p {
+            color: #d6e8ed;
+            margin: 8px 0 0;
+        }
 
-        <select asp-for="MemberId"
-                asp-items="ViewBag.Members"
-                class="form-select">
-            <option value="">(choose a member)</option>
-        </select>
+    .borrow-icon {
+        font-size: 48px;
+        margin-right: 18px;
+    }
 
-        <span asp-validation-for="MemberId" class="text-danger"></span>
+    .back-link {
+        color: #176b70;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 18px;
+    }
+
+        .back-link:hover {
+            color: #102a43;
+        }
+
+    .borrow-card {
+        background: white;
+        border: 1px solid #e5edf2;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 25px rgba(16, 42, 67, .05);
+    }
+
+        .borrow-card h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+    .borrow-description {
+        color: #8291a5;
+        font-size: 13px;
+        margin-bottom: 25px;
+    }
+
+    .borrow-label {
+        color: #385568;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 9px;
+    }
+
+    .borrow-input {
+        border: 1px solid #dce5eb;
+        border-radius: 10px;
+        padding: 13px 14px;
+        background-color: #fbfdfe;
+        transition: .2s;
+    }
+
+        .borrow-input:focus {
+            border-color: #176b70;
+            box-shadow: 0 0 0 3px rgba(23, 107, 112, .12);
+            background: white;
+        }
+
+    .field-hint {
+        color: #8291a5;
+        font-size: 12px;
+        margin-top: 7px;
+    }
+
+    .field-error {
+        color: #c43d4b;
+        font-size: 12px;
+        display: block;
+        margin-top: 6px;
+    }
+
+    .borrow-alert {
+        background: #fff0f0;
+        color: #b42332;
+        border: 1px solid #f5c5ca;
+        border-radius: 10px;
+        padding: 13px 16px;
+        font-size: 13px;
+    }
+
+    .borrow-submit {
+        background: #176b70;
+        color: white;
+        border: none;
+        border-radius: 9px;
+        padding: 12px 23px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+        .borrow-submit:hover {
+            background: #102a43;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .borrow-cancel {
+        border: 1px solid #dce5eb;
+        color: #52677d;
+        border-radius: 9px;
+        padding: 12px 23px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+        .borrow-cancel:hover {
+            background: #edf4f5;
+            color: #102a43;
+        }
+
+    .borrow-note {
+        background: #edf7f6;
+        border-radius: 10px;
+        padding: 15px;
+        color: #176b70;
+        font-size: 13px;
+        margin-top: 22px;
+    }
+
+    @@media (max-width: 600px) {
+        .borrow-hero {
+            padding: 23px;
+        }
+
+            .borrow-hero h1 {
+                font-size: 1.8rem;
+            }
+
+        .borrow-card {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="borrow-page">
+
+    <!-- BACK LINK -->
+    <a asp-action="Index" class="back-link">
+        ← Back to Loans
+    </a>
+
+    <!-- HEADER -->
+    <div class="borrow-hero">
+        <div class="d-flex align-items-center">
+            <div class="borrow-icon">📖</div>
+            <div>
+                <h1>Borrow a Book</h1>
+                <p>Record a new book loan for a library member.</p>
+            </div>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="BookId" class="form-label">Book</label>
+    <!-- BORROW FORM -->
+    <div class="borrow-card">
 
-        <select asp-for="BookId"
-                asp-items="ViewBag.Books"
-                class="form-select">
-            <option value="">(choose a book)</option>
-        </select>
+        <h2>Loan Information</h2>
+        <p class="borrow-description">
+            Complete the details below to register a new borrowing transaction.
+        </p>
 
-        <span asp-validation-for="BookId" class="text-danger"></span>
+        <form asp-action="Borrow" method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="borrow-alert mb-4"></div>
+
+            <!-- MEMBER -->
+            <div class="mb-4">
+                <label asp-for="MemberId" class="form-label borrow-label">
+                    Select Member
+                </label>
+
+                <select asp-for="MemberId"
+                        asp-items="ViewBag.Members"
+                        class="form-select borrow-input">
+
+                    <option value="">Choose a library member</option>
+
+                </select>
+
+                <span asp-validation-for="MemberId"
+                      class="field-error"></span>
+
+                <div class="field-hint">
+                    Select the member who will borrow the book.
+                </div>
+            </div>
+
+            <!-- BOOK -->
+            <div class="mb-4">
+                <label asp-for="BookId" class="form-label borrow-label">
+                    Select Book
+                </label>
+
+                <select asp-for="BookId"
+                        asp-items="ViewBag.Books"
+                        class="form-select borrow-input">
+
+                    <option value="">Choose a book</option>
+
+                </select>
+
+                <span asp-validation-for="BookId"
+                      class="field-error"></span>
+
+                <div class="field-hint">
+                    Choose the book being borrowed.
+                </div>
+            </div>
+
+            <!-- LOAN DURATION -->
+            <div class="mb-4">
+                <label asp-for="DaysAllowed" class="form-label borrow-label">
+                    Loan Duration
+                </label>
+
+                <input asp-for="DaysAllowed"
+                       type="number"
+                       min="1"
+                       max="30"
+                       class="form-control borrow-input" />
+
+                <span asp-validation-for="DaysAllowed"
+                      class="field-error"></span>
+
+                <div class="field-hint">
+                    Enter the number of days allowed (1–30 days).
+                </div>
+            </div>
+
+            <!-- INFORMATION NOTE -->
+            <div class="borrow-note">
+                <strong>📌 Reminder:</strong>
+                Please verify the selected member and book before submitting.
+            </div>
+
+            <!-- BUTTONS -->
+            <hr class="my-4" />
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+
+                <a asp-action="Index" class="borrow-cancel">
+                    Cancel
+                </a>
+
+                <button type="submit" class="borrow-submit">
+                    ✓ Confirm Borrow
+                </button>
+
+            </div>
+
+        </form>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="DaysAllowed" class="form-label">Days allowed</label>
+    <p class="text-center text-muted small mt-3">
+        Library Hub · Book Borrowing Management
+    </p>
 
-        <input asp-for="DaysAllowed" class="form-control" />
-
-        <span asp-validation-for="DaysAllowed" class="text-danger"></span>
-    </div>
-
-    <div>
-        <button type="submit" class="btn btn-primary">Borrow</button>
-
-        <a asp-action="Index" class="btn btn-link">Cancel</a>
-    </div>
-
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

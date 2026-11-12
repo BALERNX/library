@@ -4,41 +4,338 @@
     ViewData["Title"] = Model.Member.FullName;
 }
 
-<h1 class="mb-1">@Model.Member.FullName</h1>
+<div class="member-details-page">
 
-<p class="text-muted">
-    @Model.Member.MemberType · @(Model.Member.Email ?? "no email")
-</p>
-
-<h2 class="h5 mt-4">Loans</h2>
-
-@if (Model.Loans.Count == 0)
-{
-    <p>This member has never borrowed a book.</p>
-}
-else
-{
-    <table class="table table-striped align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Book</th>
-                <th>Loaned</th>
-                <th>Returned</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var loan in Model.Loans)
-            {
-                <tr>
-                    <td>@loan.BookTitle</td>
-                    <td>@loan.LoanedOn.ToString("yyyy-MM-dd")</td>
-                    <td>@(loan.ReturnedOn?.ToString("yyyy-MM-dd") ?? "—")</td>
-                    <td>@loan.Status</td>
-                </tr>
+    <style>
+            .member-details-page {
+                --navy: #102a43;
+                --teal: #176b70;
+                --gold: #f4c95d;
+                color: #243b53;
+                padding: 24px 0 40px;
             }
-        </tbody>
-    </table>
-}
 
-<a asp-action="Index" class="btn btn-link px-0">Back to members</a>
+            .details-hero {
+                background: linear-gradient(135deg, #102a43, #176b70);
+                color: white;
+                padding: 32px;
+                border-radius: 18px;
+                margin-bottom: 24px;
+                box-shadow: 0 8px 22px rgba(16, 42, 67, .12);
+            }
+
+            .details-back {
+                color: #d9eeee;
+                text-decoration: none;
+                font-size: .9rem;
+            }
+
+                .details-back:hover {
+                    color: white;
+                    text-decoration: underline;
+                }
+
+            .member-avatar {
+                width: 64px;
+                height: 64px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 18px;
+                background: var(--gold);
+                color: var(--navy);
+                font-size: 1.6rem;
+                font-weight: 800;
+                flex-shrink: 0;
+            }
+
+            .details-card {
+                background: white;
+                border: 1px solid #e6edf2;
+                border-radius: 16px;
+                box-shadow: 0 5px 18px rgba(16, 42, 67, .06);
+                overflow: hidden;
+                margin-bottom: 24px;
+            }
+
+            .details-card-header {
+                padding: 20px 24px;
+                border-bottom: 1px solid #e6edf2;
+            }
+
+            .details-card-body {
+                padding: 24px;
+            }
+
+            .info-label {
+                color: #627d98;
+                font-size: .78rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .06em;
+                margin-bottom: 7px;
+            }
+
+            .info-value {
+                color: var(--navy);
+                font-weight: 600;
+                font-size: 1rem;
+                overflow-wrap: anywhere;
+            }
+
+            .member-type {
+                display: inline-block;
+                padding: 7px 13px;
+                border-radius: 30px;
+                background: #e4f3f2;
+                color: var(--teal);
+                font-size: .85rem;
+                font-weight: 700;
+            }
+
+            .history-count {
+                background: #e4f3f2;
+                color: var(--teal);
+                padding: 7px 13px;
+                border-radius: 30px;
+                font-size: .85rem;
+                font-weight: 700;
+            }
+
+            .details-table {
+                margin-bottom: 0;
+            }
+
+                .details-table thead th {
+                    background: var(--navy);
+                    color: white;
+                    border: none;
+                    padding: 15px 18px;
+                    font-size: .8rem;
+                    text-transform: uppercase;
+                    letter-spacing: .04em;
+                    white-space: nowrap;
+                }
+
+                .details-table tbody td {
+                    padding: 16px 18px;
+                    vertical-align: middle;
+                    border-color: #edf2f6;
+                }
+
+                .details-table tbody tr:hover {
+                    background: #f5fafa;
+                }
+
+            .empty-history {
+                padding: 48px 20px;
+                text-align: center;
+            }
+
+            .empty-icon {
+                width: 58px;
+                height: 58px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 16px;
+                border-radius: 18px;
+                background: #e4f3f2;
+                color: var(--teal);
+                font-size: 1.7rem;
+            }
+
+            .details-btn {
+                background: var(--teal);
+                color: white;
+                border: none;
+                border-radius: 9px;
+                padding: 10px 20px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+                .details-btn:hover {
+                    background: #12575b;
+                    color: white;
+                }
+
+            @@media (max-width: 576px) {
+                .details-hero {
+                    padding: 23px;
+                }
+
+                .details-card-body {
+                    padding: 18px;
+                }
+            }
+    </style>
+
+    <div class="container">
+
+        <!-- Member Header -->
+        <div class="details-hero">
+            <a asp-action="Index" class="details-back">
+                ← Back to Members
+            </a>
+
+            <div class="d-flex align-items-center gap-3 mt-4">
+                <div class="member-avatar">
+                    @(string.IsNullOrWhiteSpace(Model.Member.FullName)
+                        ? "?"
+                        : Model.Member.FullName.Substring(0, 1).ToUpper())
+                </div>
+
+                <div>
+                    <h1 class="fw-bold mb-1">
+                        @Model.Member.FullName
+                    </h1>
+                    <p class="mb-0 text-white-50">
+                        Member Profile and Borrowing History
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Information -->
+        <div class="details-card">
+            <div class="details-card-header">
+                <h5 class="fw-bold mb-0">
+                    Member Information
+                </h5>
+                <small class="text-muted">
+                    Personal details registered in the library
+                </small>
+            </div>
+
+            <div class="details-card-body">
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">
+                            @Model.Member.FullName
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-label">Member Type</div>
+                        <div>
+                            <span class="member-type">
+                                @Model.Member.MemberType
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-label">Email Address</div>
+                        <div class="info-value">
+                            @(Model.Member.Email ?? "No email provided")
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-label">Total Loan Records</div>
+                        <div class="info-value">
+                            @Model.Loans.Count
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Loan History -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+                <h2 class="h4 fw-bold mb-1">
+                    Borrowing History
+                </h2>
+                <p class="text-muted small mb-0">
+                    All books borrowed by this member
+                </p>
+            </div>
+
+            <span class="history-count">
+                @Model.Loans.Count Record(s)
+            </span>
+        </div>
+
+        <div class="details-card">
+            @if (Model.Loans.Count == 0)
+            {
+                <div class="empty-history">
+                    <div class="empty-icon">📚</div>
+                    <h5 class="fw-bold">No Borrowing Records</h5>
+                    <p class="text-muted mb-0">
+                        This member has not borrowed any books yet.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle details-table">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Loaned Date</th>
+                                <th>Returned Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var loan in Model.Loans)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">
+                                        @loan.BookTitle
+                                    </td>
+
+                                    <td>
+                                        @loan.LoanedOn.ToString("yyyy-MM-dd")
+                                    </td>
+
+                                    <td>
+                                        @(loan.ReturnedOn?.ToString("yyyy-MM-dd") ?? "—")
+                                    </td>
+
+                                    <td>
+                                        @if (loan.Status == "Overdue")
+                                        {
+                                            <span class="badge rounded-pill text-bg-danger">
+                                                Overdue
+                                            </span>
+                                        }
+                                        else if (loan.Status == "Out")
+                                        {
+                                            <span class="badge rounded-pill text-bg-warning">
+                                                Out
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill text-bg-success">
+                                                Returned
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-4">
+            <a asp-action="Index" class="details-btn">
+                ← Back to Members
+            </a>
+        </div>
+
+    </div>
+</div>

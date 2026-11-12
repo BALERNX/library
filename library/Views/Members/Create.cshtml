@@ -4,36 +4,256 @@
     ViewData["Title"] = "Add a Member";
 }
 
-<h1>Add a Member</h1>
+<div class="create-member-page">
 
-<form asp-action="Create" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <style>
+            .create-member-page {
+                --navy: #102a43;
+                --teal: #176b70;
+                --gold: #f4c95d;
+                color: #243b53;
+                padding: 30px 0 45px;
+            }
 
-    <div class="mb-3">
-        <label asp-for="FullName" class="form-label">Full Name</label>
-        <input asp-for="FullName" class="form-control" required />
-        <span asp-validation-for="FullName" class="text-danger"></span>
+            .create-hero {
+                background: linear-gradient(135deg, var(--navy), var(--teal));
+                color: white;
+                padding: 30px;
+                border-radius: 18px;
+                margin-bottom: 25px;
+            }
+
+            .create-card {
+                max-width: 700px;
+                margin: 0 auto;
+                background: white;
+                border: 1px solid #e6edf2;
+                border-radius: 18px;
+                box-shadow: 0 7px 22px rgba(16, 42, 67, .07);
+                overflow: hidden;
+            }
+
+            .create-card-header {
+                padding: 22px 28px;
+                border-bottom: 1px solid #e6edf2;
+            }
+
+            .create-card-body {
+                padding: 28px;
+            }
+
+            .create-member-page .form-label {
+                color: var(--navy);
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            .create-member-page .form-control,
+            .create-member-page .form-select {
+                border: 1px solid #cbd5df;
+                border-radius: 10px;
+                padding: 12px 14px;
+                min-height: 48px;
+            }
+
+                .create-member-page .form-control:focus,
+                .create-member-page .form-select:focus {
+                    border-color: var(--teal);
+                    box-shadow: 0 0 0 .2rem rgba(23, 107, 112, .13);
+                }
+
+            .field-hint {
+                color: #829ab1;
+                font-size: .82rem;
+                margin-top: 6px;
+            }
+
+            .field-error {
+                color: #c0392b;
+                font-size: .85rem;
+            }
+
+            .validation-box {
+                border-radius: 10px;
+                margin-bottom: 20px;
+            }
+
+            .btn-save-member {
+                background: var(--teal);
+                color: white;
+                border: none;
+                border-radius: 9px;
+                padding: 11px 22px;
+                font-weight: 700;
+            }
+
+                .btn-save-member:hover {
+                    background: #12575b;
+                    color: white;
+                }
+
+            .btn-cancel-member {
+                background: white;
+                color: var(--navy);
+                border: 1px solid #cbd5df;
+                border-radius: 9px;
+                padding: 11px 22px;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .btn-cancel-member:hover {
+                    background: #edf2f6;
+                    color: var(--navy);
+                }
+
+            .create-accent {
+                width: 45px;
+                height: 4px;
+                background: var(--gold);
+                border-radius: 5px;
+                margin-top: 15px;
+            }
+
+            @@media (max-width: 576px) {
+                .create-hero {
+                    padding: 23px;
+                }
+
+                .create-card-body {
+                    padding: 20px;
+                }
+            }
+    </style>
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="create-hero">
+            <a asp-action="Index"
+               class="text-white-50 text-decoration-none small">
+                ← Back to Members
+            </a>
+
+            <h1 class="fw-bold mt-3 mb-2">
+                Add a New Member
+            </h1>
+
+            <p class="mb-0 text-white-50">
+                Register a new member in your library system.
+            </p>
+
+            <div class="create-accent"></div>
+        </div>
+
+        <!-- Create Member Form -->
+        <div class="create-card">
+
+            <div class="create-card-header">
+                <h5 class="fw-bold mb-1">
+                    Member Information
+                </h5>
+
+                <p class="text-muted small mb-0">
+                    Enter the member's details below.
+                </p>
+            </div>
+
+            <div class="create-card-body">
+
+                <form asp-action="Create" method="post">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger validation-box">
+                    </div>
+
+                    <!-- Full Name -->
+                    <div class="mb-4">
+                        <label asp-for="FullName" class="form-label">
+                            Full Name
+                        </label>
+
+                        <input asp-for="FullName"
+                               class="form-control"
+                               placeholder="Enter the member's full name"
+                               required />
+
+                        <div class="field-hint">
+                            Enter the complete name of the member.
+                        </div>
+
+                        <span asp-validation-for="FullName"
+                              class="field-error">
+                        </span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label">
+                            Email Address
+                            <span class="text-muted fw-normal">(Optional)</span>
+                        </label>
+
+                        <input asp-for="Email"
+                               type="text"
+                               class="form-control"
+                               placeholder="example@email.com" />
+
+                        <div class="field-hint">
+                            You may leave this field blank if the member
+                            does not have an email address.
+                        </div>
+
+                        <span asp-validation-for="Email"
+                              class="field-error">
+                        </span>
+                    </div>
+
+                    <!-- Member Type -->
+                    <div class="mb-4">
+                        <label asp-for="MemberType" class="form-label">
+                            Member Type
+                        </label>
+
+                        <select asp-for="MemberType"
+                                class="form-select"
+                                required>
+                            <option value="Regular">Regular</option>
+                            <option value="Student">Student</option>
+                            <option value="Faculty">Faculty</option>
+                        </select>
+
+                        <div class="field-hint">
+                            Select the member's classification.
+                        </div>
+
+                        <span asp-validation-for="MemberType"
+                              class="field-error">
+                        </span>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex flex-wrap gap-2 pt-2">
+
+                        <button type="submit" class="btn-save-member">
+                            + Add Member
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn-cancel-member">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">Email (optional)</label>
-        <input asp-for="Email" type="text" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="MemberType" class="form-label">Member Type</label>
-        <select asp-for="MemberType" class="form-select" required>
-            <option value="Regular">Regular</option>
-            <option value="Student">Student</option>
-            <option value="Faculty">Faculty</option>
-        </select>
-        <span asp-validation-for="MemberType" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add a member</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

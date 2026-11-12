@@ -4,50 +4,418 @@
     ViewData["Title"] = "Members";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h1 class="mb-0">Members</h1>
-        <p class="text-muted mb-0">@Model.Count members in the catalogue</p>
-    </div>
-    <a asp-action="Create" class="btn btn-primary">Add a member</a>
-</div>
+<style>
+    .members-page {
+        max-width: 1200px;
+        margin: 45px auto;
+        padding: 0 20px;
+        color: #172b4d;
+    }
 
-<table class="table table-striped table-hover align-middle">
-    <thead class="table-dark">
-        <tr>
-            <th class="text-end">#</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Member Type</th>
-            <th class="text-end">Books out</th>
-            <th class="text-end">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var member in Model)
-        {
-            <tr>
-                <td class="text-end">@member.MemberId</td>
-                <td>@member.FullName</td>
-                <td>@(member.Email ?? "—")</td>
-                <td class="text-end">@member.OpenLoans</td>
-                <td>
-                    <span class="badge text-bg-secondary">
-                        @member.MemberType
-                    </span>
-                </td>
-                <td class="text-end">
-                    <a asp-action="Edit"
-                       asp-route-id="@member.MemberId"
-                       class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a asp-action="Delete"
-                       asp-route-id="@member.MemberId"
-                       class="btn btn-sm btn-outline-danger">Delete</a>
-                    <a asp-action="Details" asp-route-id="@member.MemberId"
-                       class="btn btn-sm btn-outline-primary">Loans</a>
-                   </td>
+    .members-hero {
+        background: linear-gradient(120deg, #102a43, #176b70);
+        color: white;
+        padding: 35px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+        box-shadow: 0 12px 30px rgba(16, 42, 67, .15);
+    }
 
-            </tr>
+        .members-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -1px;
         }
-    </tbody>
-</table>
+
+        .members-hero p {
+            color: #d6e8ed;
+            margin: 8px 0 0;
+        }
+
+    .hero-icon {
+        font-size: 55px;
+        margin-right: 20px;
+    }
+
+    .add-member-btn {
+        background: #f4c95d;
+        color: #172b4d;
+        border: none;
+        border-radius: 10px;
+        padding: 13px 20px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: .2s;
+    }
+
+        .add-member-btn:hover {
+            background: #ffda79;
+            color: #172b4d;
+            transform: translateY(-2px);
+        }
+
+    .member-summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 22px;
+    }
+
+    .summary-card {
+        background: white;
+        border: 1px solid #e5edf2;
+        border-radius: 15px;
+        padding: 22px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 5px 18px rgba(16, 42, 67, .04);
+    }
+
+    .summary-icon {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        border-radius: 13px;
+        background: #e3f4f1;
+        font-size: 25px;
+    }
+
+    .summary-number {
+        font-size: 25px;
+        font-weight: 800;
+        color: #176b70;
+    }
+
+    .summary-label {
+        color: #718096;
+        font-size: 13px;
+    }
+
+    .members-card {
+        background: white;
+        border: 1px solid #e5edf2;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 8px 25px rgba(16, 42, 67, .05);
+    }
+
+        .members-card h2 {
+            font-size: 19px;
+            font-weight: 750;
+            margin-bottom: 5px;
+        }
+
+    .members-subtitle {
+        color: #8291a5;
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .members-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .members-table thead th {
+            background: #edf4f5;
+            color: #385568;
+            padding: 15px 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            border: none;
+            white-space: nowrap;
+        }
+
+            .members-table thead th:first-child {
+                border-radius: 9px 0 0 9px;
+            }
+
+            .members-table thead th:last-child {
+                border-radius: 0 9px 9px 0;
+            }
+
+        .members-table tbody td {
+            padding: 17px 14px;
+            border-bottom: 1px solid #edf1f5;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .members-table tbody tr:hover {
+            background: #f7fbfb;
+        }
+
+    .member-id {
+        color: #8493a5;
+        font-weight: 700;
+    }
+
+    .member-name {
+        font-weight: 700;
+        color: #183b56;
+    }
+
+    .member-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: inline-grid;
+        place-items: center;
+        background: #e1f3ef;
+        color: #176b70;
+        font-weight: 800;
+        margin-right: 10px;
+    }
+
+    .member-type {
+        display: inline-block;
+        background: #e1f3ef;
+        color: #167568;
+        padding: 7px 13px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .loan-count {
+        display: inline-block;
+        min-width: 30px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #edf4f5;
+        color: #176b70;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 7px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        margin: 2px;
+        transition: .2s;
+        white-space: nowrap;
+    }
+
+    .details-btn {
+        color: #176b70;
+        background: #e7f5f3;
+        border: 1px solid #b9e0db;
+    }
+
+        .details-btn:hover {
+            background: #176b70;
+            color: white;
+        }
+
+    .edit-btn {
+        color: #345b9a;
+        background: #edf3ff;
+        border: 1px solid #cbdaf5;
+    }
+
+        .edit-btn:hover {
+            background: #345b9a;
+            color: white;
+        }
+
+    .delete-btn {
+        color: #c43d4b;
+        background: #fff0f0;
+        border: 1px solid #f5c5ca;
+    }
+
+        .delete-btn:hover {
+            background: #c43d4b;
+            color: white;
+        }
+
+    .empty-members {
+        text-align: center;
+        padding: 55px 15px;
+        color: #8291a5;
+    }
+
+    .empty-icon {
+        font-size: 45px;
+        margin-bottom: 12px;
+    }
+
+    @@media (max-width: 700px) {
+        .members-hero {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 25px;
+        }
+
+            .members-hero h1 {
+                font-size: 2rem;
+            }
+
+        .member-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .members-table {
+            min-width: 850px;
+        }
+
+        .members-card {
+            padding: 14px;
+        }
+    }
+</style>
+
+<div class="members-page">
+
+    <!-- PAGE HEADER -->
+    <div class="members-hero">
+        <div class="d-flex align-items-center">
+            <div class="hero-icon">👥</div>
+            <div>
+                <h1>Member Directory</h1>
+                <p>Manage your library members and their borrowing activities.</p>
+            </div>
+        </div>
+
+        <a asp-action="Create" class="add-member-btn">
+            + Add New Member
+        </a>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="member-summary">
+
+        <div class="summary-card">
+            <div class="summary-icon">👤</div>
+            <div>
+                <div class="summary-number">@Model.Count</div>
+                <div class="summary-label">REGISTERED MEMBERS</div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon">📚</div>
+            <div>
+                <div class="summary-number">@Model.Sum(m => m.OpenLoans)</div>
+                <div class="summary-label">TOTAL BOOKS CURRENTLY OUT</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MEMBERS TABLE -->
+    <div class="members-card">
+
+        <h2>Library Members</h2>
+        <p class="members-subtitle">
+            Member information and borrowing overview
+        </p>
+
+        @if (Model.Count == 0)
+        {
+            <div class="empty-members">
+                <div class="empty-icon">👥</div>
+                <h4>No members registered</h4>
+                <p>Add your first member to start building your directory.</p>
+
+                <a asp-action="Create" class="btn btn-primary">
+                    Add Your First Member
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="members-table">
+
+                    <thead>
+                        <tr>
+                            <th class="text-end">#</th>
+                            <th>Member</th>
+                            <th>Email Address</th>
+                            <th>Member Type</th>
+                            <th class="text-center">Books Out</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var member in Model)
+                        {
+                            <tr>
+                                <td class="text-end member-id">
+                                    @member.MemberId
+                                </td>
+
+                                <td>
+                                    <span class="member-avatar">
+                                        @(string.IsNullOrWhiteSpace(member.FullName)
+                                            ? "?"
+                                            : member.FullName.Substring(0, 1).ToUpper())
+                                    </span>
+
+                                    <span class="member-name">
+                                        @member.FullName
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(member.Email ?? "—")
+                                </td>
+
+                                <td>
+                                    <span class="member-type">
+                                        @member.MemberType
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <span class="loan-count">
+                                        @member.OpenLoans
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <a asp-action="Details"
+                                       asp-route-id="@member.MemberId"
+                                       class="action-btn details-btn">
+                                        View Loans
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@member.MemberId"
+                                       class="action-btn edit-btn">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@member.MemberId"
+                                       class="action-btn delete-btn">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        }
+
+    </div>
+
+</div>

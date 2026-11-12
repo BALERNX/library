@@ -4,52 +4,348 @@
     ViewData["Title"] = "Notes";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h1>Notes</h1>
-            <p>@Model.Count notes in the notepad</p>
-        </div>
-        <a asp-action="Create" class="btn btn-primary">Add a note</a>
-    </div>
+<div class="notes-page">
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Body</th>
-                    <th>Created On</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var note in Model)
-                {
-                    <tr>
-                        <td>@note.Title</td>
-                        <td>
-                            @if (string.IsNullOrWhiteSpace(note.Body))
-                            {
-                                <span class="text-muted">No body</span>
-                            }
-                            else
-                            {
-                                @note.Body
-                            }
-                        </td>
-                        <td>@note.CreatedOn.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            <a asp-action="Edit"
-                               asp-route-id="@note.NoteId"
-                               class="btn btn-sm btn-warning">Edit</a>
-                            <a asp-action="Delete"
-                               asp-route-id="@note.NoteId"
-                               class="btn btn-sm btn-danger">Delete</a>
-                        </td>
-                    </tr>
+    <style>
+            .notes-page {
+                --navy: #102a43;
+                --teal: #176b70;
+                --gold: #f4c95d;
+                color: #243b53;
+                padding: 30px 0 45px;
+            }
+
+            .notes-hero {
+                background: linear-gradient(135deg, var(--navy), var(--teal));
+                color: white;
+                padding: 32px;
+                border-radius: 18px;
+                margin-bottom: 25px;
+                box-shadow: 0 8px 22px rgba(16, 42, 67, .12);
+            }
+
+                .notes-hero p {
+                    color: rgba(255, 255, 255, .72);
                 }
-            </tbody>
-        </table>
+
+            .notes-accent {
+                width: 48px;
+                height: 4px;
+                background: var(--gold);
+                border-radius: 5px;
+                margin-top: 16px;
+            }
+
+            .add-note-btn {
+                display: inline-block;
+                background: var(--gold);
+                color: var(--navy);
+                padding: 11px 19px;
+                border-radius: 9px;
+                font-weight: 700;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+                .add-note-btn:hover {
+                    background: #ffda75;
+                    color: var(--navy);
+                }
+
+            .notes-summary {
+                background: white;
+                border: 1px solid #e6edf2;
+                border-radius: 14px;
+                padding: 18px 22px;
+                margin-bottom: 22px;
+                box-shadow: 0 4px 14px rgba(16, 42, 67, .05);
+            }
+
+            .summary-label {
+                color: #627d98;
+                font-size: .8rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+            }
+
+            .summary-number {
+                color: var(--navy);
+                font-size: 1.7rem;
+                font-weight: 800;
+            }
+
+            .notes-card {
+                background: white;
+                border: 1px solid #e6edf2;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 18px rgba(16, 42, 67, .06);
+            }
+
+            .notes-card-header {
+                padding: 20px 24px;
+                border-bottom: 1px solid #e6edf2;
+            }
+
+            .notes-table {
+                margin-bottom: 0;
+            }
+
+                .notes-table thead th {
+                    background: var(--navy);
+                    color: white;
+                    border: none;
+                    padding: 15px 18px;
+                    font-size: .8rem;
+                    text-transform: uppercase;
+                    letter-spacing: .04em;
+                    white-space: nowrap;
+                }
+
+                .notes-table tbody td {
+                    padding: 17px 18px;
+                    vertical-align: middle;
+                    border-color: #edf2f6;
+                }
+
+                .notes-table tbody tr:hover {
+                    background: #f5fafa;
+                }
+
+            .note-title {
+                color: var(--navy);
+                font-weight: 700;
+                min-width: 130px;
+            }
+
+            .note-body {
+                color: #486581;
+                min-width: 180px;
+                max-width: 420px;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+            }
+
+            .note-date {
+                color: #627d98;
+                font-size: .9rem;
+                white-space: nowrap;
+            }
+
+            .edit-note-btn,
+            .delete-note-btn {
+                display: inline-block;
+                padding: 7px 13px;
+                border-radius: 8px;
+                font-size: .85rem;
+                font-weight: 600;
+                text-decoration: none;
+                margin: 2px;
+            }
+
+            .edit-note-btn {
+                background: #e4f3f2;
+                color: var(--teal);
+            }
+
+                .edit-note-btn:hover {
+                    background: var(--teal);
+                    color: white;
+                }
+
+            .delete-note-btn {
+                background: #fff0ed;
+                color: #c0392b;
+            }
+
+                .delete-note-btn:hover {
+                    background: #c0392b;
+                    color: white;
+                }
+
+            .empty-notes {
+                text-align: center;
+                padding: 55px 20px;
+            }
+
+            .empty-notes-icon {
+                width: 62px;
+                height: 62px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #e4f3f2;
+                color: var(--teal);
+                border-radius: 18px;
+                font-size: 1.8rem;
+                margin: 0 auto 16px;
+            }
+
+            .notes-footer {
+                padding: 15px 22px;
+                color: #829ab1;
+                font-size: .85rem;
+                border-top: 1px solid #edf2f6;
+            }
+
+            @@media (max-width: 576px) {
+                .notes-hero {
+                    padding: 23px;
+                }
+
+                .notes-hero-actions {
+                    margin-top: 18px;
+                }
+            }
+    </style>
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="notes-hero">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+                <div>
+                    <h1 class="fw-bold mb-2">
+                        My Notepad
+                    </h1>
+
+                    <p class="mb-0">
+                        Keep your library reminders and important notes organized.
+                    </p>
+
+                    <div class="notes-accent"></div>
+                </div>
+
+                <div class="notes-hero-actions">
+                    <a asp-action="Create" class="add-note-btn">
+                        + Create a Note
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="notes-summary">
+            <div class="summary-label">
+                Total Saved Notes
+            </div>
+
+            <div class="summary-number">
+                @Model.Count
+            </div>
+
+            <div class="text-muted small">
+                Notes currently stored in your notepad
+            </div>
+        </div>
+
+        <!-- Notes Table -->
+        <div class="notes-card">
+
+            <div class="notes-card-header">
+                <h5 class="fw-bold mb-1">
+                    Your Notes
+                </h5>
+
+                <p class="text-muted small mb-0">
+                    View and manage your saved notes.
+                </p>
+            </div>
+
+            @if (Model.Count == 0)
+            {
+                <div class="empty-notes">
+                    <div class="empty-notes-icon">
+                        📝
+                    </div>
+
+                    <h5 class="fw-bold">
+                        No Notes Yet
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Start organizing your thoughts by creating your first note.
+                    </p>
+
+                    <a asp-action="Create" class="add-note-btn">
+                        + Create Your First Note
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle notes-table">
+
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Note Content</th>
+                                <th>Created On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var note in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="note-title">
+                                            @note.Title
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @if (string.IsNullOrWhiteSpace(note.Body))
+                                        {
+                                            <span class="text-muted fst-italic">
+                                                No body
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <div class="note-body">
+                                                @note.Body
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <span class="note-date">
+                                            @note.CreatedOn.ToString("yyyy-MM-dd")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <a asp-action="Edit"
+                                           asp-route-id="@note.NoteId"
+                                           class="edit-note-btn">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@note.NoteId"
+                                           class="delete-note-btn">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+            <div class="notes-footer">
+                Showing @Model.Count note(s) in your notepad.
+            </div>
+
+        </div>
+
     </div>
 </div>
